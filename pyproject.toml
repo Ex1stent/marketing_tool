@@ -1,5 +1,5 @@
 [project]
-name = "nyalazone-mcp-scheduler"
+name = "marketing_tool"
 version = "0.1.0"
 description = "Multi-platform content scheduler with MCP tools for Instagram, Facebook, and WhatsApp"
 requires-python = ">=3.11"
