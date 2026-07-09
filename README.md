@@ -111,7 +111,7 @@ ANTHROPIC_MODEL=claude-sonnet-4-6
 ANTHROPIC_BASE_URL=https://api.anthropic.com
 
 # Database
-DATABASE_URL=postgresql://postgres:1234@localhost:5432/mcp
+DATABASE_URL=
 
 # Knowledge Base PDF
 DOCUMENT_PATH=
