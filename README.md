@@ -82,47 +82,6 @@ cp .env.example .env
 
 2. Edit `.env` with your values:
 
-<<<<<<< HEAD
-=======
-```env
-# Instagram
-IG_USER_ID=
-IG_ACCOUNT_ID=
-IG_ACCESS_TOKEN=
-IG_GRAPH_HOST=graph.facebook.com
-IG_GRAPH_VERSION=v21.0
-
-# WhatsApp
-WHATSAPP_ID=
-WHATSAPP_TOKEN=
-
-# Facebook
-FACEBOOK_PAGE_ID=
-FACEBOOK_ACCESS_TOKEN=
-FACEBOOK_GRAPH_HOST=graph.facebook.com
-FACEBOOK_GRAPH_VERSION=v21.0
-
-# Webhook Verify Tokens
-META_WEBHOOK_VERIFY_TOKEN=
-WHATSAPP_VERIFY_TOKEN=
-FACEBOOK_WEBHOOK_VERIFY_TOKEN=
-
-# Anthropic
-ANTHROPIC_API_KEY=
-ANTHROPIC_MODEL=claude-sonnet-4-6
-ANTHROPIC_BASE_URL=https://api.anthropic.com
-
-# Database
-DATABASE_URL=
-
-# Knowledge Base PDF
-DOCUMENT_PATH=
-
-# RabbitMQ
-RABBITMQ_URL=amqp://guest:guest@localhost:5672//
-```
-
->>>>>>> 434a471d4ee26348ab87ec730329a92c93a21c61
 ## Installation
 
 ```bash
