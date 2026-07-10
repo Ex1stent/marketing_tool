@@ -35,10 +35,9 @@ marketing_tool/
 │   └── facebook_parse.py       # Facebook webhook parser
 │
 ├── models/
-│   ├── base.py                 # SQLAlchemy declarative base
-│   ├── database.py             # Engine, session, automap
-│   ├── scheduled_post.py       # ScheduledPost model
-│   └── webhook_repository.py   # Webhook events repository
+│   ├── database.py             # Engine, session, automap (ScheduledPost, WebhookEvent)
+│   ├── scheduled_post_repository.py  # ScheduledPost CRUD (save, to_dict)
+│   └── webhook_repository.py   # Webhook events CRUD (save_event, save_reply)
 │
 ├── tasks/
 │   ├── instagram_tasks.py      # IG publish tasks
@@ -82,13 +81,15 @@ cp .env.example .env
 
 2. Edit `.env` with your values:
 
+
+
 ## Installation
 
 ```bash
 # Create virtual environment
 python -m venv .venv
 
-# Activate (Window
+# Activate (Windows)
 .venv\Scripts\activate
 
 # Activate (Linux/Mac)
@@ -172,10 +173,12 @@ Celery Beat (60s) ──→ scheduler_tasks ──→ Celery Tasks ──→ Gra
 
 ## Database
 
-PostgreSQL with `meta` schema:
+PostgreSQL with `meta` schema, using SQLAlchemy automap:
 
 - **webhook_events** — Stores inbound/outbound webhook events with full payload JSON
 - **scheduled_posts** — Tracks scheduled posts with status (`pending`, `scheduled`, `completed`, `failed`, `cancelled`)
+
+Both models are auto-mapped from existing tables via `Base.prepare()` in `models/database.py`.
 
 ## Celery Tasks
 
