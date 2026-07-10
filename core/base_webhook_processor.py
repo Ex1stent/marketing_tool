@@ -13,6 +13,7 @@ logger = get_logger(__name__)
 
 class BaseWebhookProcessor:
     def __init__(self):
+        
         self.repo = WebhookRepository()
         self.model = ModelProvider()
 

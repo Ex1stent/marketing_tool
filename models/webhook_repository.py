@@ -3,9 +3,9 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any
 
-from models.database import Base, SessionLocal
+from models.database import SessionLocal,WebhookEvent
 
-WebhookEvent = Base.classes.webhook_events
+
 
 
 def _to_timestamp(value: Any):

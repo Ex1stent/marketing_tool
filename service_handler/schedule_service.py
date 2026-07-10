@@ -6,12 +6,13 @@ from typing import Any
 from mcp.server.fastmcp import FastMCP
 
 from models.database import SessionLocal
-from models.scheduled_post import ScheduledPost
+from models.scheduled_post_repository import ScheduledPostRepository
 from scheduler.excel_parser import parse_excel
 from utils.decorators import _tool
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
+repo = ScheduledPostRepository()
 
 
 def register_schedule_tools(mcp: FastMCP) -> None:
@@ -27,22 +28,8 @@ def register_schedule_tools(mcp: FastMCP) -> None:
         created = []
         try:
             for post in posts:
-                row = ScheduledPost(
-                    post_type=post["post_type"],
-                    platform=post["platform"],
-                    media_url=post["media_url"] or None,
-                    message=post["message"] or None,
-                    topic=post["topic"] or None,
-                    recipient_id=post["recipient_id"] or None,
-                    location_id=post["location_id"] or None,
-                    scheduled_time=post["scheduled_time"],
-                    status="pending",
-                )
-                session.add(row)
-                session.flush()
-                created.append({"id": row.id, "post_type": row.post_type,
-                                "message": row.message, "topic": row.topic,
-                                "scheduled_time": row.scheduled_time.isoformat()})
+                row = repo.save(session,post)
+                created.append(repo.to_dict(row))
             session.commit()
             logger.info("Scheduled %d posts from Excel | file=%s", len(created), file_path)
         except Exception:
@@ -59,11 +46,11 @@ def register_schedule_tools(mcp: FastMCP) -> None:
         """List all scheduled posts, optionally filtered by status (pending, scheduled, completed, failed, cancelled)."""
         session = SessionLocal()
         try:
-            q = session.query(ScheduledPost)
+            q = session.query(repo.model)
             if status:
-                q = q.filter(ScheduledPost.status == status)
-            q = q.order_by(ScheduledPost.scheduled_time.asc())
-            posts = [r.to_dict() for r in q.all()]
+                q = q.filter(repo.model.status == status)
+            q = q.order_by(repo.model.scheduled_time.asc())
+            posts = [repo.to_dict(r) for r in q.all()]
             logger.debug("list_scheduled_posts | status=%s count=%d", status, len(posts))
             return posts
         finally:
@@ -74,7 +61,7 @@ def register_schedule_tools(mcp: FastMCP) -> None:
         """Cancel a pending scheduled post by ID."""
         session = SessionLocal()
         try:
-            post = session.query(ScheduledPost).filter(ScheduledPost.id == post_id).first()
+            post = session.query(repo.model).filter(repo.model.id == post_id).first()
             if not post:
                 logger.warning("cancel_scheduled_post | not found id=%d", post_id)
                 return {"error": True, "message": f"No scheduled post with id {post_id}"}
@@ -95,7 +82,7 @@ def register_schedule_tools(mcp: FastMCP) -> None:
                     "recipient_id", "location_id", "scheduled_time"}
         session = SessionLocal()
         try:
-            post = session.query(ScheduledPost).filter(ScheduledPost.id == post_id).first()
+            post = session.query(repo.model).filter(repo.model.id == post_id).first()
             if not post:
                 logger.warning("update_scheduled_post | not found id=%d", post_id)
                 return {"error": True, "message": f"No scheduled post with id {post_id}"}
@@ -107,7 +94,7 @@ def register_schedule_tools(mcp: FastMCP) -> None:
                 setattr(post, key, val)
             session.commit()
             logger.info("Updated scheduled post id=%d fields=%s", post_id, set(updated))
-            return {"success": True, "post": post.to_dict()}
+            return {"success": True, "post": repo.to_dict(post)}
         finally:
             session.close()
 
@@ -116,13 +103,11 @@ def register_schedule_tools(mcp: FastMCP) -> None:
         """Check the execution status and result of a scheduled post."""
         session = SessionLocal()
         try:
-            post = session.query(ScheduledPost).filter(ScheduledPost.id == post_id).first()
+            post = session.query(repo.model).filter(repo.model.id == post_id).first()
             if not post:
                 logger.warning("get_scheduled_post_status | not found id=%d", post_id)
                 return {"error": True, "message": f"No scheduled post with id {post_id}"}
             logger.debug("get_scheduled_post_status | id=%d status=%s", post_id, post.status)
-            return post.to_dict()
+            return repo.to_dict(post)
         finally:
-            session.close()
-
-    
+            session.close()    

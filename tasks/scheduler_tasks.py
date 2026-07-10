@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 
 from celery_app import app
 from models.database import SessionLocal
-from models.scheduled_post import ScheduledPost
+from models.scheduled_post_repository import ScheduledPostRepository
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -29,13 +29,14 @@ def check_and_enqueue_posts() -> dict[str, int]:
 
     session = SessionLocal()
     now = datetime.now(timezone.utc).replace(tzinfo=None)
+    repo = ScheduledPostRepository()
     dispatched = 0
     errors = 0
 
     try:
         posts = (
-            session.query(ScheduledPost)
-            .filter(ScheduledPost.status == "pending", ScheduledPost.scheduled_time <= now)
+            session.query(repo.model)
+            .filter(repo.model.status == "pending", repo.model.scheduled_time <= now)
             .all()
         )
 

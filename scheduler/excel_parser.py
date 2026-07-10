@@ -10,6 +10,7 @@ from utils.logger import get_logger
 logger = get_logger(__name__)
 
 REQUIRED_COLUMNS = ["post_type", "scheduled_time"]
+
 ALLOWED_POST_TYPES: dict[str, list[str]] = {
     "image": ["media_url", "message", "location_id"],
     "reel": ["media_url", "message"],
@@ -62,6 +63,10 @@ def parse_excel(file_path: str) -> list[dict[str, Any]]:
             scheduled_time = datetime.fromisoformat(scheduled_time)
         else:
             errors.append(f"Row {i}: invalid scheduled_time")
+            continue
+
+        if scheduled_time < datetime.now():
+            errors.append(f"Row {i}: scheduled_time {scheduled_time} is in the past")
             continue
         # rer
         # if caption == "":
