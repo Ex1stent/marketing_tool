@@ -1,0 +1,21 @@
+<div class="section-header">
+  <h3 class="section-title">Scheduled Posts</h3>
+  <div class="filters">
+    <select class="filter-select" [value]="sortBy()" (change)="sortByChange.emit($any($event.target).value)">
+      <option value="desc">Newest first</option>
+      <option value="asc">Oldest first</option>
+    </select>
+    <select class="filter-select" [value]="filterPlatform()" (change)="filterPlatformChange.emit($any($event.target).value)">
+      <option value="">All platforms</option>
+      @for (p of platformOptions(); track p) {
+        <option [value]="p">{{ p }}</option>
+      }
+    </select>
+    <select class="filter-select" [value]="filterType()" (change)="filterTypeChange.emit($any($event.target).value)">
+      <option value="">All types</option>
+      @for (t of typeOptions(); track t) {
+        <option [value]="t">{{ t }}</option>
+      }
+    </select>
+  </div>
+</div>

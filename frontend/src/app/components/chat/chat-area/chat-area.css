@@ -1,0 +1,28 @@
+/* Column layout: header fixed, thread flexes, composer pinned to bottom. */
+.chat-area {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  background: var(--color-bg);
+}
+:host {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+}
+/* Thread occupies all space between header and composer. */
+.chat-area app-message-list {
+  flex: 1;
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  align-items: stretch;
+}
+
+/* Composer stays at the bottom with some breathing room. */
+.chat-area app-chat-input {
+  padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg);
+}

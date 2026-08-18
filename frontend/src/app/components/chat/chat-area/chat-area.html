@@ -1,0 +1,11 @@
+<main class="chat-area">
+  <app-chat-header
+    [title]="title()"
+    [convId]="convId()"
+    (delete)="onDelete()"
+  />
+
+  <app-message-list [messages]="messages()" [isTyping]="isTyping()" />
+
+  <app-chat-input (send)="onSend($event)" />
+</main>

@@ -1,0 +1,39 @@
+<div class="scheduled-posts">
+  @if (posts().length) {
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Post Type</th>
+            <th>Scheduled Date & Time</th>
+            <th>Platform</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (post of posts(); track post.id) {
+            <tr>
+              <td class="title-cell">{{ post.post_type }} — {{ post.topic ?? 'N/A' }}</td>
+              <td>{{ post.scheduled_time | date:'MMM d, y, HH:mm' }}</td>
+              <td>{{ post.platform ?? '-' }}</td>
+              <td>
+                <span class="badge" [class]="statusClass(post.status)">{{ post.status }}</span>
+                @if (post.status === 'failed' && post.error_message) {
+                  <div class="post-error" [title]="post.error_message">{{ post.error_message }}</div>
+                }
+              </td>
+              <td>
+                @if (post.status === 'pending' || post.status === 'scheduled') {
+                  <button class="action-btn" (click)="onCancel(post.id)">Cancel</button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <p class="empty">No scheduled posts</p>
+  }
+</div>

@@ -1,0 +1,76 @@
+.scheduled-posts {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+th, td {
+  padding: var(--spacing-sm) var(--spacing-md);
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+th {
+  background: var(--bg-sidebar);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.title-cell {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.badge {
+  padding: 4px 50px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.badge.scheduled { background: #dbeafe; color: #1d4ed8; }
+.badge.posted    { background: #dcfce7; color: #16a34a; }
+.badge.pending   { background: #fef3c7; color: #d97706; }
+.badge.failed    { background: #fee2e2; color: #dc2626; }
+.badge.cancelled { background: #f3f4f6; color: #6b7280; }
+
+.action-btn {
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+.action-btn:hover { background: var(--bg-item-hover); }
+
+.empty {
+  padding: var(--spacing-md);
+  color: var(--text-secondary);
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.post-error {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #dc2626;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

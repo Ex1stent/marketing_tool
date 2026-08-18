@@ -1,0 +1,13 @@
+<div #scroll class="scroll-area">
+  @for (message of messages(); track message.id) {
+    <app-message-bubble [message]="message" [class.user-msg]="message.role === 'user'" />
+  }
+
+  @if (isTyping()) {
+    <div class="typing">
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div>
+  }
+</div>

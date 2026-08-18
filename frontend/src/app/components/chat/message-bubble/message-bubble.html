@@ -1,0 +1,7 @@
+  <div class="bubble" [class.bubble--right]="isUser()" [class.bubble--left]="!isUser()">
+  <div class="avatar" [class.avatar--user]="isUser()" [class.avatar--ai]="!isUser()">{{ isUser() ? 'USER' : 'BOT' }}</div>
+
+  <div class="body">
+    <div class="content" [innerHTML]="parsedContent()"></div>
+  </div>
+</div>

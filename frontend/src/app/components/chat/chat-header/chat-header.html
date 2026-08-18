@@ -1,0 +1,19 @@
+<header class="chat-header">
+  @if (editing()) {
+    <input
+      class="title-input"
+      [value]="editValue()"
+      (input)="editValue.set($any($event.target).value)"
+      (keydown)="onEditKeydown($event)"
+      (blur)="onEditSave()"
+    />
+  } @else {
+    <h1 class="title" (click)="onEditStart()" title="Click to rename">{{ title() }}</h1>
+  }
+
+  <div class="actions">
+    <button type="button" class="action-btn" aria-label="Delete conversation" (click)="onDelete()">
+      <svg viewBox="0 0 24 24" width="18" height="18"><use href="#icon-trash"/></svg>
+    </button>
+  </div>
+</header>

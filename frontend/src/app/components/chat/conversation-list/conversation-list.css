@@ -1,0 +1,112 @@
+/* Column layout filling the sidebar height. */
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Primary call-to-action for starting a fresh chat. */
+.new-chat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  margin: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  font: inherit;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.new-chat:hover {
+  background: var(--bg-item-hover);
+  border-color: var(--color-primary);
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border);
+}
+
+.segment-toggle {
+  display: flex;
+  flex: 1;
+  background: var(--color-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.segment {
+  flex: 1;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  text-align: center;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.segment:hover { background: var(--bg-item-hover); }
+
+.segment--active {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.search {
+  display: block;
+  width: calc(100% - (var(--spacing-md) * 2));
+  margin: var(--spacing-sm) var(--spacing-md) 10px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font: inherit;
+  font-size: 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  color: var(--text-primary);
+  outline: none;
+}
+
+.search:focus { border-color: var(--color-primary); }
+
+.plus {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+/* Small uppercase header above the list. */
+.section-label {
+  margin: 0 var(--spacing-md) var(--spacing-sm);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+/* The scrollable conversation list grows to fill remaining space. */
+.list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 var(--spacing-sm);
+}
+
+.empty {
+  margin: var(--spacing-md);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}

@@ -1,0 +1,55 @@
+<div class="page">
+  <app-scheduler-sidebar
+    [batches]="batches()"
+    [activeBatchId]="selectedBatchId()"
+    (selectBatch)="onSelectBatch($event)"
+    (scheduleBatch)="onScheduleBatch($event)"
+    (deleteBatch)="onDeleteBatch($event)"
+    (resetToLanding)="onResetToLanding()"
+    (goHome)="onGoHome()"
+  />
+
+  <div class="main">
+    @if (selectedBatchId()) {
+      <div class="top-row">
+        <app-stats-cards [stats]="batchStats()" />
+        <div class="upload-area">
+          <app-excel-upload
+            #excelUploadRef
+            (uploaded)="onUploadExcel($event)"
+          />
+          <button class="schedule-btn" [disabled]="!canSchedule()" (click)="onScheduleBatch(selectedBatchId()!)">Schedule Batch</button>
+        </div>
+      </div>
+
+      <app-excel-preview [posts]="previewPosts()" />
+
+      <section class="section">
+        <app-post-filters
+          [sortBy]="sortBy()"
+          [filterPlatform]="filterPlatform()"
+          [filterType]="filterType()"
+          [platformOptions]="platformOptions"
+          [typeOptions]="typeOptions"
+          (sortByChange)="sortBy.set($event)"
+          (filterPlatformChange)="filterPlatform.set($event)"
+          (filterTypeChange)="filterType.set($event)"
+        />
+        <app-scheduled-posts [posts]="filteredPosts()" (cancel)="onCancelPost($event)" />
+      </section>
+    } @else {
+      <div class="top-row">
+        <app-stats-cards [stats]="stats()" />
+      </div>
+      <div class="landing">
+        <h2 class="state-title">Upload your Excel file</h2>
+        <p class="state-text">Import posts and schedule them to social platforms.</p>
+        <app-excel-upload
+          #excelUploadRef
+          (uploaded)="onUploadExcel($event)"
+        />
+        <a class="template-link" href="/api/scheduler/template" download>Download Excel template</a>
+      </div>
+    }
+  </div>
+</div>

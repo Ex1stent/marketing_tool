@@ -1,0 +1,14 @@
+<div class="excel-upload">
+  <label class="upload-btn" [class.disabled]="uploading()">
+    @if (uploading()) {
+      <span class="spinner"></span> Uploading...
+    } @else {
+      <svg width="16" height="16" viewBox="0 0 24 24"><use href="#icon-upload"/></svg>
+      Upload Excel
+    }
+    <input type="file" accept=".xlsx" (change)="onFileSelected($event)" hidden [disabled]="uploading()" />
+  </label>
+  @if (fileName()) {
+    <span class="file-name">{{ fileName() }}</span>
+  }
+</div>

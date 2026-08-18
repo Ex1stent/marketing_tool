@@ -1,0 +1,42 @@
+/* Full-width, borderless row that behaves like a list item. */
+.conversation-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  font: inherit;
+  text-align: left;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.conversation-item:hover {
+  background: var(--bg-item-hover);
+}
+
+/* Accent the currently open conversation. */
+.conversation-item.is-active {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+/* Title truncates and takes the remaining width. */
+.title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.875rem;
+}
+
+.time {
+  flex: none;
+  font-size: 0.7rem;
+  opacity: 0.7;
+}

@@ -1,0 +1,20 @@
+<div class="status-summary">
+  @if (stats(); as s) {
+    <div class="card">
+      <span class="card-value">{{ s.total }}</span>
+      <span class="card-label">Total Posts</span>
+    </div>
+    <div class="card scheduled">
+      <span class="card-value">{{ s.scheduled ?? 0 }}</span>
+      <span class="card-label">Scheduled</span>
+    </div>
+    <div class="card posted">
+      <span class="card-value">{{ s.posted ?? 0 }}</span>
+      <span class="card-label">Posted</span>
+    </div>
+    <div class="card failed">
+      <span class="card-value">{{ s.failed ?? 0 }}</span>
+      <span class="card-label">Failed</span>
+    </div>
+  }
+</div>

@@ -1,0 +1,96 @@
+/* Full-width bar anchoring the composer at the bottom. */
+.chat-input {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+}
+
+/* Attachment trigger and the submit circle share sizing. */
+.icon-btn,
+.send-btn {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.icon-btn {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.icon-btn:hover {
+  color: var(--text-primary);
+}
+
+/* Grow the text field, subtle placeholder color. */
+.text-field {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: var(--spacing-sm);
+  font: inherit;
+  color: var(--text-primary);
+}
+
+.text-field::placeholder {
+  color: var(--text-secondary);
+}
+
+/* Primary filled send action. */
+.send-btn {
+  background: var(--color-primary);
+  color: #fff;
+  transition: background 0.2s ease;
+}
+
+.send-btn:hover {
+  background: var(--color-primary-hover);
+}
+
+.file-input {
+  display: none;
+}
+
+.file-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-item-hover);
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  max-width: 120px;
+}
+
+.file-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-remove {
+  flex: none;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0;
+}
+
+.file-remove:hover {
+  color: var(--text-primary);
+}

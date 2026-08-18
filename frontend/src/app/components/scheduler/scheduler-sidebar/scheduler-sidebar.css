@@ -1,0 +1,123 @@
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: var(--sidebar-width);
+  height: 100%;
+  border-right: 1px solid var(--border);
+  background: var(--bg-sidebar);
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border);
+}
+
+.segment-toggle {
+  display: flex;
+  flex: 1;
+  background: var(--color-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.segment {
+  flex: 1;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  text-align: center;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.segment:hover { background:var(--bg-item-hover);}
+
+.segment--active {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.batch-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-sm);
+}
+
+.batch-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.batch-item:hover { background: var(--bg-item-hover); }
+.batch-item.active { background: var(--bg-item-hover); border-left: 3px solid var(--color-primary); }
+
+.batch-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.batch-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.batch-meta {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.schedule-btn {
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary);
+  color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.schedule-btn:hover { background: var(--color-primary-hover); }
+
+.batch-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.delete-btn {
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  line-height: 1.4;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  color: #dc2626;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.delete-btn:hover { background: #fee2e2; }
+
+.empty {
+  padding: var(--spacing-md);
+  color: var(--text-secondary);
+  text-align: center;
+  font-size: 0.85rem;
+}

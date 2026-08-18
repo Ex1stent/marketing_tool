@@ -1,0 +1,9 @@
+<aside class="sidebar">
+  <app-conversation-list
+    [conversations]="conversations()"
+    [activeConversationId]="activeConversationId()"
+    (createNew)="onCreateNew()"
+    (select)="onSelect($event)"
+    (goHome)="onGoHome()"
+  />
+</aside>

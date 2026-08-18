@@ -1,0 +1,5 @@
+/* Root shell is a full-viewport block so routed pages can fill it. */
+:host {
+  display: block;
+  height: 100dvh;
+}

@@ -1,0 +1,33 @@
+<aside class="sidebar">
+  <div class="sidebar-header">
+  <div class="segment-toggle">
+    <span class="segment" (click)="onGoHome()">💬 Chat</span>
+    <span class="segment segment--active" (click)="onResetToLanding()">📅 Scheduler</span>
+  </div>
+</div>
+
+  <div class="batch-list">
+    @for (batch of batches(); track batch.id) {
+      <div
+        class="batch-item"
+        [class.active]="batch.id === activeBatchId()"
+        (click)="onSelect(batch)"
+      >
+        <div class="batch-info">
+          <span class="batch-title">{{ batch.title }}</span>
+          <span class="batch-meta">{{ batch.count }} posts · {{ batch.created_at | date:'MMM d, y, HH:mm' }}</span>
+        </div>
+        <div class="batch-actions">
+          @if (batch.statuses['pending']) {
+            <button class="schedule-btn" (click)="onSchedule(batch.id, $event)">Schedule</button>
+          }
+          <button class="delete-btn" title="Delete batch" (click)="onDelete(batch.id, $event)">
+            <svg viewBox="0 -2 26 26" width="14" height="14"> <use href="#icon-trash"/></svg>
+          </button>
+        </div>
+      </div>
+    } @empty {
+      <p class="empty">No batches yet</p>
+    }
+  </div>
+</aside>

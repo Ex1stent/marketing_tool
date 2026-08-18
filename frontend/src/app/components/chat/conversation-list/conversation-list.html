@@ -1,0 +1,33 @@
+<div class="sidebar-header">
+
+  <div class="segment-toggle">
+    <span class="segment segment--active" (click)="onGoHome()">💬 Chat</span>
+    <span class="segment" (click)="onGoToScheduler()">📅 Scheduler</span>
+  </div>
+</div>
+<button type="button" class="new-chat" (click)="onCreateNew()">
+  <span class="plus">+</span>
+  <span>New Chat</span>
+</button>
+
+<input
+  type="search"
+  class="search"
+  placeholder="Search conversations..."
+  [value]="searchQuery()"
+  (input)="onSearch($event)"
+/>
+
+<h2 class="section-label">Recent Conversations</h2>
+
+<nav class="list" aria-label="Recent conversations">
+  @for (conversation of displayed(); track conversation.id) {
+    <app-conversation-item
+      [conversation]="conversation"
+      [isActive]="conversation.id === activeConversationId()"
+      (select)="onSelect($event)"
+    />
+  } @empty {
+    <p class="empty">No conversations yet.</p>
+  }
+</nav>

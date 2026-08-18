@@ -1,0 +1,34 @@
+<div class="page">
+  <app-sidebar
+    [conversations]="conversations()"
+    [activeConversationId]="activeConversationId()"
+    (createNew)="createNewConversation()"
+    (select)="openConversation($event)"
+    (goHome)="onGoHome()"
+  />
+
+  @if (creating()) {
+    <div class="state">
+      <p class="state-text">Creating chat...</p>
+    </div>
+  } @else if (hasConversation()) {
+    <app-chat-area
+      [title]="title()"
+      [convId]="activeConversationId()"
+      [messages]="messages()"
+      [isTyping]="isTyping()"
+      (send)="onSend($event)"
+      (delete)="onDelete()"
+    />
+  } @else if (loading()) {
+    <div class="state">
+      <p class="state-text">Loading conversations...</p>
+    </div>
+  } @else {
+    <div class="state landing">
+      <h2 class="state-title">Start a new conversation</h2>
+      <p class="state-text">Type a message below to begin.</p>
+      <app-chat-input class="landing-input" (send)="onSendLanding($event)" />
+    </div>
+  }
+</div>
