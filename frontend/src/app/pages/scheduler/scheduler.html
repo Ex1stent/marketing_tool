@@ -1,4 +1,9 @@
 <div class="page">
+  @if (loading()) {
+    <div class="loading-state">
+      <p>Loading scheduler...</p>
+    </div>
+  } @else {
   <app-scheduler-sidebar
     [batches]="batches()"
     [activeBatchId]="selectedBatchId()"
@@ -52,4 +57,5 @@
       </div>
     }
   </div>
+  }
 </div>

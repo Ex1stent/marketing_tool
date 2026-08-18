@@ -36,9 +36,12 @@ export class SchedulerService {
     return this.http.get<ScheduledPost[]>(`${this.baseUrl}/posts${qs}`);
   }
 
-  uploadExcel(file: File): Observable<UploadResponse> {
+  uploadExcel(file: File, title?: string): Observable<UploadResponse> {
     const form = new FormData();
     form.append('file', file);
+    if (title) {
+      form.append('title', title);
+    }
     return this.http.post<UploadResponse>(`${this.baseUrl}/uploadexcel`, form);
   }
 

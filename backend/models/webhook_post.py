@@ -11,7 +11,7 @@ from utils.logger import logger
 
 def _to_timestamp(value: Any) -> datetime | None:
     if value in (None, ""):
-        return None
+        return None 
     if isinstance(value, datetime):
         return value
     try:

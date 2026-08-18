@@ -33,4 +33,5 @@ CREATE TABLE  marketing_tool.scheduled_post_batches (
     title VARCHAR(255) ,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
+    status VARCHAR(20) DEFAULT 'active',
 );

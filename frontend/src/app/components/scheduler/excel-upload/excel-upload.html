@@ -12,3 +12,21 @@
     <span class="file-name">{{ fileName() }}</span>
   }
 </div>
+
+@if (showModal()) {
+  <div class="modal-overlay" (click)="cancelUpload()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <h3>Enter Batch Name</h3>
+      <input
+        type="text"
+        [(ngModel)]="batchTitle"
+        placeholder="Enter batch title..."
+        class="modal-input"
+      />
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="cancelUpload()">Cancel</button>
+        <button class="btn-upload" (click)="confirmUpload()">Upload</button>
+      </div>
+    </div>
+  </div>
+}

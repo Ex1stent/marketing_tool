@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 
-from fastapi import APIRouter, Body, Depends, File, UploadFile
+from fastapi import APIRouter, Body, Depends, File, Form, UploadFile
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
@@ -19,8 +19,12 @@ def get_stats(db: Session = Depends(get_db)):
 
 
 @scheduler_routes.post("/scheduler/uploadexcel")
-async def upload_excel(file: UploadFile = File(...), db: Session = Depends(get_db)):
-    return await SchedulerHandler(db).upload_excel(file)
+async def upload_excel(
+    file: UploadFile = File(...),
+    title: str | None = Form(None),
+    db: Session = Depends(get_db),
+):
+    return await SchedulerHandler(db).upload_excel(file, title=title)
 
 
 @scheduler_routes.get("/scheduler/posts")

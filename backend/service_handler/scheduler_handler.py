@@ -69,7 +69,7 @@ class SchedulerHandler:
         logger.info("Scheduled %d posts from Excel | batch_id=%d file=%s", len(created), batch.id, filepath)
         return {"batch": schedule_batch.to_dict(batch), "count": len(created), "preview": created[:10]}
 
-    async def upload_excel(self, file: UploadFile) -> dict[str, Any]:
+    async def upload_excel(self, file: UploadFile, title: str | None = None) -> dict[str, Any]:
         # Save an uploaded file to disk, then schedule its posts.
         try:
             FileUploadHandler.validate_file(file)
@@ -79,8 +79,9 @@ class SchedulerHandler:
             filename = FileUploadHandler.generate_filename(file.filename)
             filepath = FileUploadHandler.save_to_disk(filename, content)
             logger.info("scheduler_handler.upload_excel | file=%s", filepath)
-            title = file.filename.rsplit(".", 1)[0] if "." in file.filename else file.filename
-            return self.schedule_from_path(filepath, title)
+            if not title:
+                title = file.filename.rsplit(".", 1)[0] if "." in file.filename else file.filename
+            return self.schedule_from_path(filepath, title=title)
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e))
         except Exception:

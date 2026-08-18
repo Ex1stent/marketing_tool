@@ -3,7 +3,7 @@ import { Component, computed, inject, OnInit, signal, ViewChild } from '@angular
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 
-import { ExcelUpload } from '../../components/scheduler/excel-upload/excel-upload';
+import { ExcelUpload, UploadedFile } from '../../components/scheduler/excel-upload/excel-upload';
 import { ScheduledPosts } from '../../components/scheduler/scheduled-posts/scheduled-posts';
 import { SchedulerSidebar } from '../../components/scheduler/scheduler-sidebar/scheduler-sidebar';
 import { StatsCards } from '../../components/scheduler/stats-cards/stats-cards';
@@ -136,9 +136,9 @@ export class Scheduler implements OnInit {
     }
   }
 
-  protected async onUploadExcel(file: File): Promise<void> {
+  protected async onUploadExcel(uploaded: UploadedFile): Promise<void> {
     try {
-      const res = await firstValueFrom(this.schedulerService.uploadExcel(file));
+      const res = await firstValueFrom(this.schedulerService.uploadExcel(uploaded.file, uploaded.title));
       this.previewPosts.set(res.preview);
       this.selectedBatchId.set(res.batch.id);
       void this.router.navigate(['/scheduler', res.batch.id]);

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Any
 
 from sqlalchemy.orm import Session
@@ -19,10 +20,10 @@ class ScheduledPostBatchRepository:
         return model_obj
 
     def list_batches(self) -> list[Any]:
-        return self.session.query(self.model).order_by(self.model.created_at.desc()).all()
+        return self.session.query(self.model).filter(self.model.status == 'active').order_by(self.model.created_at.desc()).all()
 
     def get_batch(self, batch_id: int) -> Any | None:
-        return self.session.query(self.model).filter_by(id=batch_id).first()
+        return self.session.query(self.model).filter_by(id=batch_id, status='active').first()
 
     def get_batches_with_counts(self) -> list[dict[str, Any]]:
         # Return all batches with post count and status breakdown.
@@ -52,14 +53,18 @@ class ScheduledPostBatchRepository:
             logger.exception("Failed to save scheduled post batch %s", e)
 
     def delete_batch(self, batch_id: int) -> bool:
-        # Hard delete a batch and all posts linked to it.
+        # Soft delete: mark batch inactive and cancel pending posts.
         from models.engine import TableScheduledPost
 
-        row = self.session.query(self.model).filter_by(id=batch_id).first()
+        row = self.session.query(self.model).filter_by(id=batch_id, status='active').first()
         if not row:
             return False
-        self.session.query(TableScheduledPost).filter(TableScheduledPost.batch_id == batch_id).delete()
-        self.session.delete(row)
+        row.status = 'inactive'
+        row.updated_at = datetime.utcnow()
+        self.session.query(TableScheduledPost).filter(
+            TableScheduledPost.batch_id == batch_id,
+            TableScheduledPost.status == 'pending'
+        ).update({"status": "cancelled"})
         self.session.commit()
         return True
        
