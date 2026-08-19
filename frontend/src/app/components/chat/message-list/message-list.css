@@ -13,6 +13,30 @@
   align-self: flex-end;
 }
 
+.typing-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  align-self: flex-start;
+}
+
+.avatar {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.avatar--ai {
+  background: var(--avatar-ai);
+}
+
 .typing {
   display: flex;
   align-items: center;

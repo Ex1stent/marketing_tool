@@ -8,6 +8,7 @@
             <th>Scheduled Date & Time</th>
             <th>Platform</th>
             <th>Status</th>
+            <th>Reason</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -19,8 +20,12 @@
               <td>{{ post.platform ?? '-' }}</td>
               <td>
                 <span class="badge" [class]="statusClass(post.status)">{{ post.status }}</span>
+              </td>
+              <td>
                 @if (post.status === 'failed' && post.error_message) {
-                  <div class="post-error" [title]="post.error_message">{{ post.error_message }}</div>
+                  <span class="post-error">{{ simplifyError(post.error_message) }}</span>
+                } @else {
+                  <span class="reason-na">—</span>
                 }
               </td>
               <td>

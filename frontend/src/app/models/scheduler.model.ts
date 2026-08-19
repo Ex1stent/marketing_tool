@@ -20,7 +20,7 @@ export interface ScheduledPost {
 export interface ScheduledPostBatch {
   id: number;
   title: string;
-  created_at?: string;
+  created_at?: Date;
   count: number;
   statuses: Record<string, number>;
 }

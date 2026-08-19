@@ -21,9 +21,9 @@ def search_chats(q: str = "", db: Session = Depends(get_db)):
     return ConversationHandler(db).search_conversations(q)
 
 
-@chat_routes.post("/chats/create")
-def create_chat(title: str = Body("New Chat", embed=True), db: Session = Depends(get_db)):
-    return ConversationHandler(db).create_conversation(title)
+# @chat_routes.post("/chats/create")
+# def create_chat(title: str = Body("New Chat", embed=True), db: Session = Depends(get_db)):
+#     return ConversationHandler(db).create_conversation(title)
 
 
 @chat_routes.get("/chats/{conv_id}")

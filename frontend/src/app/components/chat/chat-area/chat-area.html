@@ -7,5 +7,5 @@
 
   <app-message-list [messages]="messages()" [isTyping]="isTyping()" />
 
-  <app-chat-input (send)="onSend($event)" />
+  <app-chat-input [disabled]="isTyping()" (send)="onSend($event)" />
 </main>

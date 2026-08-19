@@ -1,4 +1,4 @@
-import { Component, ElementRef, output, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, input, output, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -10,6 +10,8 @@ import { FormsModule } from '@angular/forms';
 })
 export class ChatInput {
   readonly send = output<{ text: string; file?: File }>();
+
+  readonly disabled = input<boolean>(false);
 
   protected readonly draft = signal('');
   protected readonly attachedFile = signal<File | null>(null);
@@ -32,6 +34,9 @@ export class ChatInput {
   }
 
   protected onSubmit(): void {
+    if (this.disabled()) {
+      return;
+    }
     const text = this.draft().trim();
     const file = this.attachedFile();
     if (!text && !file) {

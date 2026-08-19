@@ -32,6 +32,23 @@
   gap: var(--spacing-md);
 }
 
+.creating-state {
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 0;
+}
+
+.creating-layout {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.creating-input {
+  margin: var(--spacing-md);
+}
+
 .landing-input {
   width: 100%;
   max-width: 560px;

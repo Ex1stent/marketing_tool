@@ -23,7 +23,11 @@ class ScheduledPostRepository:
     def get_due_posts(self, cutoff: datetime) -> list[Any]:
         return (
             self.session.query(self.model)
-            .filter(self.model.status == "pending", self.model.scheduled_time <= cutoff)
+            .filter(
+                self.model.status.in_(("pending", "scheduled")),
+                self.model.task_id.is_(None),
+                self.model.scheduled_time <= cutoff,
+            )
             .all()
         )
 
@@ -35,6 +39,7 @@ class ScheduledPostRepository:
     def mark_failed(self, post, reason: str) -> None:
         logger.error("Scheduled post %d failed | reason=%s", post.id, reason)
         post.status = "failed"
+        post.error_message = reason
         self.session.flush()
 
     def get_post_for_update(self, post_id: int, allowed_statuses: set[str]):
@@ -62,23 +67,7 @@ class ScheduledPostRepository:
             return False, str(e)
         self.mark_scheduled(post, task.id)
         return True, ""
-
-    # @classmethod
-    # def update_post_status(cls, post_id: int, status: str, error_message: str = "") -> None:
-    #     session = SessionLocal()
-    #     try:
-    #         post = session.query(TableScheduledPost).filter_by(id=post_id).first()
-    #         if post:
-    #             post.status = status
-    #             if error_message:
-    #                 post.error_message = error_message
-    #         session.commit()
-    #     except Exception as e:
-    #         session.rollback()
-    #         logger.exception("Failed to update post status %s | post_id=%d", e, post_id)
-    #     finally:
-    #         session.close()
-
+        
     def save(self):
         try:
             self.session.commit()

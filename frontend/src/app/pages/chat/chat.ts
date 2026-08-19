@@ -5,6 +5,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { ChatArea } from '../../components/chat/chat-area/chat-area';
 import { ChatInput } from '../../components/chat/chat-input/chat-input';
+import { MessageList } from '../../components/chat/message-list/message-list';
 import { Sidebar } from '../../components/chat/sidebar/sidebar';
 import { Conversation } from '../../models/conversation.model';
 import { Message } from '../../models/message.model';
@@ -13,7 +14,7 @@ import { ChatService } from '../../services/chat.service';
 @Component({
   selector: 'app-chat',
   standalone: true,
-  imports: [Sidebar, ChatArea, ChatInput],
+  imports: [Sidebar, ChatArea, ChatInput, MessageList],
   templateUrl: './chat.html',
   styleUrl: './chat.css',
 })
@@ -48,6 +49,7 @@ export class Chat {
     this.route.paramMap.pipe(takeUntilDestroyed()).subscribe((params) => {
       const id = params.get('id');
       if (id) {
+        this.chatService.isTyping.set(false);
         void this.loadDetail(Number(id));
       } else {
         this.chatService.currentConversation.set(null);
@@ -72,24 +74,13 @@ export class Chat {
     void this.router.navigate(['/chats', conversation.id]);
   }
 
-  protected async createNewConversation(): Promise<void> {
-    this.creating.set(true);
-    try {
-      const created = await firstValueFrom(this.chatService.createConversation());
-      this.conversations.update((list) => list);
-      await this.router.navigate(['/chats', created.id]);
-    } catch (error) {
-      console.error('Failed to create conversation', error);
-    } finally {
-      this.creating.set(false);
-    }
-  }
-
   private async loadDetail(convId: number): Promise<void> {
     try {
       const detail = await firstValueFrom(this.chatService.loadConversation(convId));
       this.chatService.currentConversation.set(detail);
-      this.chatService.messages.set(detail.messages ?? []);
+      if (!this.chatService.isTyping()) {
+        this.chatService.messages.set(detail.messages ?? []);
+      }
     } catch (error) {
       console.error('Failed to load conversation detail', error);
     }
@@ -97,6 +88,13 @@ export class Chat {
 
   //Sending from the landing page creates a new conversation.
   protected async onSendLanding(payload: { text: string; file?: File }): Promise<void> {
+    const optimistic: Message = {
+      id: Date.now(),
+      conversation_id: 0,
+      role: 'user',
+      content: payload.text,
+    };
+    this.chatService.messages.set([optimistic]);
     this.creating.set(true);
     this.chatService.isTyping.set(true);
     try {
@@ -106,6 +104,15 @@ export class Chat {
         title: payload.text.length > 100 ? payload.text.slice(0, 100) + '...' : payload.text,
       };
       this.conversations.update((list) => [created, ...list]);
+      this.chatService.messages.update((list) => [
+        ...list,
+        {
+          id: Date.now() + 1,
+          conversation_id: reply.conv_id,
+          role: 'assistant',
+          content: reply.content,
+        },
+      ]);
       await this.router.navigate(['/chats', created.id]);
     } catch (error) {
       console.error('Failed to create chat', error);
@@ -143,6 +150,13 @@ export class Chat {
           content: reply.content,
         },
       ]);
+      try {
+        const detail = await firstValueFrom(this.chatService.loadConversation(conv.id));
+        this.chatService.currentConversation.set(detail);
+        this.chatService.messages.set(detail.messages ?? []);
+      } catch (error) {
+        console.error('Failed to refresh conversation', error);
+      }
     } catch (error) {
       console.error('Failed to send message', error);
     } finally {

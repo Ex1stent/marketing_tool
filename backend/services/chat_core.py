@@ -26,14 +26,11 @@ class ChatCore:
             "content": [self._serialize_content(item) for item in result.content],
         }
 
-    def _convert_tools_for_api(self, tools: list[Any]) -> list[dict[str, Any]]:     #Convert MCP tool definitions into Anthropic's tool format.
+    async def _get_tools(self, session):
+        tools_result = await session.list_tools()
         return [
-            {
-                "name": tool.name,
-                "description": tool.description or "",
-                "input_schema": tool.inputSchema,
-            }
-            for tool in tools
+            {"name": t.name, "description": t.description or "", "input_schema": t.inputSchema}
+            for t in tools_result.tools
         ]
 
     def _blocks_to_message(self, blocks: list[Any]) -> list[dict[str, Any]]:     # Convert Claude's message blocks into plain dictionary
@@ -47,10 +44,6 @@ class ChatCore:
 
     def _extract_response_text(self, blocks: list[Any]) -> str:
         return "\n".join(block.text for block in blocks if block.type == "text").strip()
-
-    async def _get_tools(self, session):
-        tools_result = await session.list_tools()
-        return self._convert_tools_for_api(tools_result.tools)
 
     async def _call_claude(self, client, model, conversation, tools):
         response = client.messages.create(

@@ -58,6 +58,15 @@
   background: var(--color-primary-hover);
 }
 
+.send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.send-btn:disabled:hover {
+  background: var(--color-primary);
+}
+
 .file-input {
   display: none;
 }

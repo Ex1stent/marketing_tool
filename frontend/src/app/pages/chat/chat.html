@@ -2,14 +2,17 @@
   <app-sidebar
     [conversations]="conversations()"
     [activeConversationId]="activeConversationId()"
-    (createNew)="createNewConversation()"
+    (createNew)="onGoHome()"
     (select)="openConversation($event)"
     (goHome)="onGoHome()"
   />
 
   @if (creating()) {
-    <div class="state">
-      <p class="state-text">Creating chat...</p>
+    <div class="creating-layout">
+      <div class="state creating-state">
+        <app-message-list [messages]="messages()" [isTyping]="isTyping()" />
+      </div>
+      <app-chat-input class="creating-input" [disabled]="isTyping()" (send)="onSend($event)" />
     </div>
   } @else if (hasConversation()) {
     <app-chat-area

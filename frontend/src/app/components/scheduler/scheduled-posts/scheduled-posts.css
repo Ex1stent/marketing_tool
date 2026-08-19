@@ -74,3 +74,7 @@ th {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.reason-na {
+  color: var(--text-secondary);
+}

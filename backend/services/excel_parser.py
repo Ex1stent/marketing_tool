@@ -70,7 +70,10 @@ def _normalize_scheduled_time(entry: dict) -> datetime | None:
 
     if not isinstance(val, datetime):
         return None
-        
+
+    if val.tzinfo is not None:
+        val = val.astimezone(timezone.utc).replace(tzinfo=None)
+
     if val < datetime.now(timezone.utc).replace(tzinfo=None):
         return None
 

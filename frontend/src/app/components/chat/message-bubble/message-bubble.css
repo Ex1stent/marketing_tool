@@ -41,7 +41,6 @@
 .avatar--user {
   background: var(--avatar-user);
 }
-
 .body {
   display: flex;
   flex-direction: column;

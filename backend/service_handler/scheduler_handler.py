@@ -8,7 +8,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 from celery_app import app
 
-from models.engine import TableScheduledPost, rows_to_dicts
+from models.engine import TableScheduledPost, TableScheduledPostBatch, rows_to_dicts
 from models.scheduled_post import ScheduledPostRepository
 from models.scheduled_post_batch import ScheduledPostBatchRepository
 from service_handler.file_upload_handler import FileUploadHandler
@@ -27,6 +27,8 @@ class SchedulerHandler:
             model = TableScheduledPost
             rows = (
                 self.db.query(model.status, func.count())
+                .join(TableScheduledPostBatch, model.batch_id == TableScheduledPostBatch.id)
+                .filter(TableScheduledPostBatch.status == "active")
                 .group_by(model.status)
                 .all()
             )
@@ -113,21 +115,6 @@ class SchedulerHandler:
             raise ValueError(f"No scheduled post with id {post_id}")
         return schedule_post, post
 
-    # def update_post(self, post_id: int, **kwargs: Any) -> dict[str, Any]:
-    #     # Update a pending/scheduled post. Returns updated post or error.
-    #     try:
-    #         schedule_post, post = self._find_post(post_id, {"pending", "scheduled"})
-    #         allowed = {"post_type", "platform", "media_url", "message", "topic", "location_id", "recipient_id", "scheduled_time"}
-    #         updated = {k: v for k, v in kwargs.items() if k in allowed}
-    #         for key, value in updated.items():
-    #             setattr(post, key, value)
-    #         schedule_post.save()
-    #         return {"success": True, "post": schedule_post.to_dict(post)}
-    #     except ValueError as e:
-    #         return {"error": True, "message": str(e)}
-    #     except Exception:
-    #         logger.exception("update_post failed")
-    #         raise
 
     def cancel_post(self, post_id: int) -> dict[str, Any]:
         # Cancel a pending or scheduled post; revoke the celery task if already dispatched.
@@ -184,12 +171,12 @@ class SchedulerHandler:
             batch = ScheduledPostBatchRepository(self.db).get_batch(batch_id)
             if not batch:
                 return {"error": True, "message": f"No batch with id {batch_id}"}
-            pending = (
-                self.db.query(TableScheduledPost)
-                .filter(TableScheduledPost.batch_id == batch_id, TableScheduledPost.status == "pending")
-                .count()
-            )
-            return {"batch_id": batch_id, "pending": pending, "status": "scheduled"}
+            self.db.query(TableScheduledPost).filter(
+                TableScheduledPost.batch_id == batch_id,
+                TableScheduledPost.status == "pending",
+            ).update({"status": "scheduled"})
+            self.db.commit()
+            return {"batch_id": batch_id, "pending": 0, "status": "scheduled"}
         except Exception:
             logger.exception("schedule_batch failed")
             raise
