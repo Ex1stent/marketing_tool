@@ -23,7 +23,7 @@
         <div class="upload-area">
           <app-excel-upload
             #excelUploadRef
-            [disabled]="isUploadDisabled()"
+            [disabled]="isExcelUploadDisabled()"
             (uploaded)="onUploadExcel($event)"
           />
           <button class="schedule-btn" [disabled]="!canSchedule()" (click)="onScheduleBatch(selectedBatchId()!)">Schedule Batch</button>
@@ -54,9 +54,12 @@
         <p class="state-text">Import posts and schedule them to social platforms.</p>
         <app-excel-upload
           #excelUploadRef
-          [disabled]="isUploadDisabled()"
+          [disabled]="isExcelUploadDisabled()"
           (uploaded)="onUploadExcel($event)"
         />
+        @if (hasOutdatedScheduledPosts()) {
+          <p class="state-text">This batch has overdue scheduled posts, so Excel upload is disabled until the batch is cleaned up.</p>
+        }
         <a class="template-link" href="/api/scheduler/template" download>Download Excel template</a>
       </div>
     }

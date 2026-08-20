@@ -18,10 +18,17 @@
     }
     @if (document(); as doc) {
       <span class="attachment">
-        <svg class="attachment__icon" viewBox="0 0 24 24" aria-hidden="true">
-          <use href="#icon-paperclip"/>
-        </svg>
-        {{ doc['file_name'] }}
+        <a
+          class="attachment__link"
+          [href]="doc['file_url']"
+          [download]="doc['file_name']"
+          target="_blank"
+        >
+          <svg class="attachment__icon" viewBox="0 0 24 24" aria-hidden="true">
+            <use href="#icon-paperclip" />
+          </svg>
+          {{ doc['file_name'] }}
+        </a>
       </span>
     }
   </div>

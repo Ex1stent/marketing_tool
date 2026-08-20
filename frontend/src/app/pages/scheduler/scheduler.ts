@@ -103,6 +103,26 @@ export class Scheduler implements OnInit {
     return (statuses['scheduled'] ?? 0) > 0 || (statuses['pending'] ?? 0) === 0;
   });
 
+  protected readonly hasOutdatedScheduledPosts = computed(() => {
+    const batchId = this.selectedBatchId();
+    if (!batchId) {
+      return false;
+    }
+
+    const now = Date.now();
+    return this.posts().some(
+      (post) =>
+        post.batch_id === batchId &&
+        post.status === 'pending' &&
+        post.scheduled_time !== undefined &&
+        new Date(post.scheduled_time).getTime() <= now,
+    );
+  });
+
+  protected readonly isExcelUploadDisabled = computed(
+    () => this.isUploadDisabled() || this.hasOutdatedScheduledPosts(),
+  );
+
   protected readonly filteredPosts = computed(() => {
     let list = this.posts();
     const platform = this.filterPlatform();
