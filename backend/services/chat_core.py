@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Callable
+from datetime import datetime, timezone
 
 from config import MCP_SERVER_URL
 from mcp import ClientSession
@@ -9,9 +10,21 @@ from mcp.client.sse import sse_client
 
 class ChatCore:
     
-    def __init__(self, system_prompt: str, mcp_server_url: str = MCP_SERVER_URL):
+    def __init__(self, system_prompt: str, mcp_server_url: str = MCP_SERVER_URL, chat_id: str | None = None, callback: Callable | None = None):
         self.system_prompt = system_prompt
         self.mcp_server_url = mcp_server_url
+        self.chat_id = chat_id
+        self.callback = callback
+
+    async def _emit_tool_event(self, tool_name: str, status: str, event_type: str = "tool_call"):
+        if self.callback:
+            await self.callback({
+                "type": event_type,
+                "tool_name": tool_name,
+                "conversation_id": self.chat_id,
+                "status": status,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            })
 
     def _serialize_content(self, content: Any) -> Any:
         if hasattr(content, "text"):
@@ -61,14 +74,20 @@ class ChatCore:
     async def _execute_tools(self, session, tool_uses):     # Execute the MCP tools and return the results
         tool_results = []
         for t in tool_uses:
-            result = await session.call_tool(t.name, t.input)
-            payload = self._format_tool_result(result)
-            tool_results.append({
-                "type": "tool_result",
-                "tool_use_id": t.id,
-                "is_error": payload["isError"],
-                "content": payload["content"][0] if payload["content"] else "",
-            })
+            await self._emit_tool_event(t.name, "running")
+            try:
+                result = await session.call_tool(t.name, t.input)
+                payload = self._format_tool_result(result)
+                await self._emit_tool_event(t.name, "success", "tool_result")
+                tool_results.append({
+                    "type": "tool_result",
+                    "tool_use_id": t.id,
+                    "is_error": payload["isError"],
+                    "content": payload["content"][0] if payload["content"] else "",
+                })
+            except Exception as e:
+                await self._emit_tool_event(t.name, "error", "tool_result")
+                raise
         return tool_results
 
     async def _chat_loop(self, client, model, conversation, tools, session):
@@ -80,7 +99,8 @@ class ChatCore:
             tool_results = await self._execute_tools(session, tool_uses)
             conversation.append({"role": "user", "content": tool_results})
 
-    async def chat_once(self, conversation, client, model):
+    async def chat_once(self, conversation, client, model, chat_id: str | None = None):
+        self.chat_id = chat_id or self.chat_id
         async with sse_client(self.mcp_server_url) as (read_stream, write_stream):
             async with ClientSession(read_stream, write_stream) as session:
                 await session.initialize()
