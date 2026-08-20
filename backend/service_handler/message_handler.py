@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 
 from services.chat_core import ChatCore
 from mcp_cli import DEFAULT_SYSTEM_PROMPT
+from utils.tool_events import broadcast_tool_event
 
 from models.conversation import ConversationRepository
 from models.message import MessagesRepository
@@ -25,14 +26,14 @@ class MessageHandler:
     def __init__(self, db: Session):
         self.db = db
 
-    async def generate_response(self, conversation: list[dict[str, Any]]) -> str:
-        chat = ChatCore(DEFAULT_SYSTEM_PROMPT)
-        return await chat.chat_once(conversation, CLIENT, ANTHROPIC_MODEL)
+    async def generate_response(self, conversation: list[dict[str, Any]], chat_id: str | None = None, callback=None) -> str:
+        chat = ChatCore(DEFAULT_SYSTEM_PROMPT, chat_id=chat_id, callback=callback)
+        return await chat.chat_once(conversation, CLIENT, ANTHROPIC_MODEL, chat_id=chat_id)
 
     def _generate_file_url(self, file_path: str) -> str:
-        # Construct the public URL for a file using BASE_URL and filename.
+        # Construct the public URL for a file using relative path.
         filename = os.path.basename(file_path)
-        return f"{BASE_URL}/uploads/{filename}" if BASE_URL else ""
+        return f"{BASE_URL}/uploads/{filename}"
 
     def _build_upload_content(self, user_message: str, file_id: int) -> tuple[str, str]:
         # Fetch doc metadata and return (content, message_type) for DB storage.
@@ -52,7 +53,7 @@ class MessageHandler:
         if not file_block:
             return message["content"]
         url = self._generate_file_url(doc["file_path"])
-        # print("url--------------------------",url)
+        print("url--------------------------",url)
         text = message["content"]
         if url:
             text += f"\n\nFile URL: {url}"
@@ -95,18 +96,32 @@ class MessageHandler:
         try:
             from service_handler.file_upload_handler import FileUploadHandler
             
-            fileupload=FileUploadHandler(self.db)
+            fileupload = FileUploadHandler(self.db)
             conv_id, _ = ConversationHandler(self.db).chk_and_create(conv_id, user_message)
             message_repository = MessagesRepository(self.db)
-            file_id = None 
-            if file:
-                file_id = (await fileupload.upload_file(file, conv_id))["file_id"]
 
-            content, message_type = self.build_message_content(user_message, file_id)
-            message_repository.create_message(conv_id, "user", content, message_type)
-            
+            file_info = None
+            if file:
+                file_info = await fileupload.upload_file(file, conv_id)
+
+            content = user_message or ("Analyze this image" if file else "Hello")
+            message_type = "file" if file else "text"
+            message = message_repository.create_message(conv_id, "user", content, message_type)
+
+            if file_info:
+                fileupload.save_doc_metadata(
+                    message.id, file_info["file_name"], file_info["file_path"],
+                    file_info["file_extension"], file_info["mime_type"], file_info["file_size"],
+                )
+
             history = self.build_ai_history(conv_id)
-            answer = await self.generate_response(history)
+            
+            # Create callback that broadcasts to SSE
+            chat_id_str = str(conv_id)
+            async def tool_callback(event: dict):
+                await broadcast_tool_event(chat_id_str, event)
+            
+            answer = await self.generate_response(history, chat_id=chat_id_str, callback=tool_callback)
             message_repository.create_message(conv_id, "assistant", answer, "text")
             message_repository.save()
 
@@ -137,7 +152,9 @@ class MessageHandler:
                 docs = doc_metadata_repository.get_metadata([m["id"] for m in file_msgs])
                 for m in messages:
                     if m["id"] in docs:
-                        m["document"] = docs[m["id"]]
+                        doc = docs[m["id"]]
+                        doc["file_url"] = self._generate_file_url(doc["file_path"])
+                        m["document"] = doc
             conv["messages"] = messages
             return conv
         except Exception:

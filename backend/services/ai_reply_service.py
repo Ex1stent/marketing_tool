@@ -65,6 +65,7 @@ ABSOLUTE RULES:
 7. Return ONLY the JSON object. No text before or after.
 8. Do NOT use markdown, code fences, or any formatting.
 9. DO NOT Reply in long Paragraph give in points form.
+10.DO NOT Reply about Support Considerations.
 
 RESPONSE TONE:
 - Be warm, friendly, and conversational — like a real support person.

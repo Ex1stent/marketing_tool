@@ -13,11 +13,13 @@ import { ScheduledPostBatch } from '../../../models/scheduler.model';
 export class SchedulerSidebar {
   readonly batches = input.required<ScheduledPostBatch[]>();
   readonly activeBatchId = input<number | null>(null);
+  readonly canScheduleStates = input<Map<number, boolean>>(new Map());
   readonly selectBatch = output<ScheduledPostBatch>();
   readonly scheduleBatch = output<number>();
   readonly deleteBatch = output<number>();
   readonly resetToLanding = output<void>();
   readonly goHome = output<void>();
+  readonly newSchedule = output<void>();
 
   protected onSelect(batch: ScheduledPostBatch): void {
     this.selectBatch.emit(batch);
@@ -39,5 +41,9 @@ export class SchedulerSidebar {
 
   protected onResetToLanding(): void {
     this.resetToLanding.emit();
+  }
+
+  protected onNewSchedule(): void {
+    this.newSchedule.emit();
   }
 }

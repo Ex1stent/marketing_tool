@@ -50,8 +50,29 @@ export class Scheduler implements OnInit {
   protected readonly canSchedule = computed(() => {
     const batchId = this.selectedBatchId();
     if (!batchId) return false;
-    const batch = this.batches().find((b) => b.id === batchId);
-    return (batch?.statuses?.['pending'] ?? 0) > 0;
+    const batch = this.batches().find(b => b.id === batchId);
+    if ((batch?.statuses?.['pending'] ?? 0) === 0) return false;
+    const now = Date.now();
+    return this.posts().some(p =>
+      p.batch_id === batchId &&
+      p.status === 'pending' &&
+      p.scheduled_time &&
+      new Date(p.scheduled_time).getTime() > now
+    );
+  });
+
+  protected readonly batchScheduleStates = computed(() => {
+    const now = Date.now();
+    const map = new Map<number, boolean>();
+    for (const batch of this.batches()) {
+      map.set(batch.id, this.posts().some(p =>
+        p.batch_id === batch.id &&
+        p.status === 'pending' &&
+        p.scheduled_time &&
+        new Date(p.scheduled_time).getTime() > now
+      ));
+    }
+    return map;
   });
 
   protected readonly batchStats = computed<SchedulerStats | null>(() => {
@@ -67,6 +88,19 @@ export class Scheduler implements OnInit {
       failed: s['failed'] ?? 0,
       pending: s['pending'] ?? 0,
     };
+  });
+
+  protected readonly isUploadDisabled = computed(() => {
+    const batchId = this.selectedBatchId();
+    if (!batchId) {
+      return false;
+    }
+    const batch = this.batches().find((b) => b.id === batchId);
+    if (!batch) {
+      return false;
+    }
+    const statuses = batch.statuses ?? {};
+    return (statuses['scheduled'] ?? 0) > 0 || (statuses['pending'] ?? 0) === 0;
   });
 
   protected readonly filteredPosts = computed(() => {
@@ -182,6 +216,10 @@ export class Scheduler implements OnInit {
 
   protected onGoHome(): void {
     void this.router.navigate(['/']);
+  }
+
+  protected onNewSchedule(): void {
+    void this.router.navigate(['/scheduler']);
   }
 
   protected onResetToLanding(): void {

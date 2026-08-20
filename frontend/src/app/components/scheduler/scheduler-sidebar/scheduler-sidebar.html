@@ -6,6 +6,10 @@
   </div>
 </div>
 
+<button type="button" class="new-schedule" (click)="onNewSchedule()">
+    <span class="plus">+</span>
+    <span>New Schedule</span>
+  </button>
   <div class="batch-list">
     @for (batch of batches(); track batch.id) {
       <div
@@ -19,7 +23,7 @@
         </div>
         <div class="batch-actions">
           @if (batch.statuses['pending']) {
-            <button class="schedule-btn" (click)="onSchedule(batch.id, $event)">Schedule</button>
+            <button class="schedule-btn" [disabled]="!canScheduleStates().get(batch.id)" (click)="onSchedule(batch.id, $event)">Schedule</button>
           }
           <button class="delete-btn" title="Delete batch" (click)="onDelete(batch.id, $event)">
             <svg viewBox="0 -2 26 24" width="16" height="16" ><use href="#icon-trash"/></svg>

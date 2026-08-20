@@ -55,9 +55,75 @@
   word-wrap: break-word;
 }
 
+.content--status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bubble--loading .content {
+  min-width: 0;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--color-primary);
+  border-top-color: rgb(6, 73, 106);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.bubble--right .spinner {
+  border-color: #fff;
+  border-top-color: var(--color-primary);
+}
+
+.status-text {
+  white-space: nowrap;
+}
+
 .bubble--right .content {
   background: var(--color-primary);
   color: #fff;
+}
+
+.attachment {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  align-self: flex-start;
+  max-width: 100%;
+  margin-bottom: 4px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-message-ai);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.attachment:hover {
+  text-decoration: underline;
+}
+
+.attachment:not([href]) {
+  cursor: default;
+  opacity: 0.8;
+}
+
+.attachment__icon {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  color: var(--color-primary);
+}
+
+.bubble--right .attachment__icon {
+  color: var(--color-primary);
 }
 
 .time {
@@ -166,4 +232,10 @@
   border: none;
   border-top: 1px solid var(--border);
   margin: 0.8em 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

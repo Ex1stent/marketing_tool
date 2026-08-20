@@ -1,4 +1,9 @@
-.docs/
 .opencode/
 .superpowers/
-.agent/
+.agents/
+.ua/
+opencode.json
+skills-lock.json
+# Added by code-review-graph
+.code-review-graph/
+docs/

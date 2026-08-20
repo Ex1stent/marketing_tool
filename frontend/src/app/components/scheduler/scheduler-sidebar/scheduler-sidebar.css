@@ -36,7 +36,7 @@
   transition: background 0.15s ease, color 0.15s ease;
 }
 
-.segment:hover { background:var(--bg-item-hover);}
+.segment:hover { background:var(--bg-item-hover); }
 
 .segment--active {
   background: var(--color-primary);
@@ -95,6 +95,14 @@
 
 .schedule-btn:hover { background: var(--color-primary-hover); }
 
+.schedule-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.schedule-btn:disabled:hover { background: #9ca3af; }
+
 .batch-actions {
   display: flex;
   align-items: center;
@@ -120,4 +128,58 @@
   color: var(--text-secondary);
   text-align: center;
   font-size: 0.85rem;
+}
+
+/* New Schedule CTA button */
+.new-schedule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  margin: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  font: inherit;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.new-schedule:hover {
+  background: var(--bg-item-hover);
+  border-color: var(--color-primary);
+}
+
+.plus {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+/* Small uppercase header above the list. */
+.section-label {
+  margin: 0 var(--spacing-md) var(--spacing-sm);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+/* The scrollable conversation list grows to fill remaining space. */
+.list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 var(--spacing-sm);
+}
+
+.empty {
+  margin: var(--spacing-md);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
 }

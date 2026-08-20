@@ -1,7 +1,28 @@
-  <div class="bubble" [class.bubble--right]="isUser()" [class.bubble--left]="!isUser()">
+<div class="bubble" [class.bubble--right]="isUser()" [class.bubble--left]="!isUser()" [class.bubble--loading]="showLoading()">
   <div class="avatar" [class.avatar--user]="isUser()" [class.avatar--ai]="!isUser()">{{ isUser() ? 'USER' : 'BOT' }}</div>
 
   <div class="body">
-    <div class="content" [innerHTML]="parsedContent()"></div>
+    @if (showLoading()) {
+      <div class="content content--status">
+        <span class="spinner" aria-hidden="true"></span>
+        <span class="status-text">
+          @if (toolName()) {
+            {{ toolName() }}
+          } @else {
+            Thinking...
+          }
+        </span>
+      </div>
+    } @else if (parsedContent()) {
+      <div class="content" [innerHTML]="parsedContent()"></div>
+    }
+    @if (document(); as doc) {
+      <span class="attachment">
+        <svg class="attachment__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <use href="#icon-paperclip"/>
+        </svg>
+        {{ doc['file_name'] }}
+      </span>
+    }
   </div>
 </div>

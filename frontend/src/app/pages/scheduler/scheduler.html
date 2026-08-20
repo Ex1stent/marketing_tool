@@ -4,15 +4,17 @@
       <p>Loading scheduler...</p>
     </div>
   } @else {
-  <app-scheduler-sidebar
+<app-scheduler-sidebar
     [batches]="batches()"
     [activeBatchId]="selectedBatchId()"
+    [canScheduleStates]="batchScheduleStates()"
     (selectBatch)="onSelectBatch($event)"
     (scheduleBatch)="onScheduleBatch($event)"
     (deleteBatch)="onDeleteBatch($event)"
     (resetToLanding)="onResetToLanding()"
     (goHome)="onGoHome()"
-  />
+    (newSchedule)="onNewSchedule()"
+/>
 
   <div class="main">
     @if (selectedBatchId()) {
@@ -21,6 +23,7 @@
         <div class="upload-area">
           <app-excel-upload
             #excelUploadRef
+            [disabled]="isUploadDisabled()"
             (uploaded)="onUploadExcel($event)"
           />
           <button class="schedule-btn" [disabled]="!canSchedule()" (click)="onScheduleBatch(selectedBatchId()!)">Schedule Batch</button>
@@ -51,6 +54,7 @@
         <p class="state-text">Import posts and schedule them to social platforms.</p>
         <app-excel-upload
           #excelUploadRef
+          [disabled]="isUploadDisabled()"
           (uploaded)="onUploadExcel($event)"
         />
         <a class="template-link" href="/api/scheduler/template" download>Download Excel template</a>

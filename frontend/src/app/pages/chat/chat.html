@@ -10,7 +10,7 @@
   @if (creating()) {
     <div class="creating-layout">
       <div class="state creating-state">
-        <app-message-list [messages]="messages()" [isTyping]="isTyping()" />
+        <app-message-list [messages]="messages()" [toolEvents]="toolEvents()" [isTyping]="isTyping()" />
       </div>
       <app-chat-input class="creating-input" [disabled]="isTyping()" (send)="onSend($event)" />
     </div>
@@ -19,6 +19,7 @@
       [title]="title()"
       [convId]="activeConversationId()"
       [messages]="messages()"
+      [toolEvents]="toolEvents()"
       [isTyping]="isTyping()"
       (send)="onSend($event)"
       (delete)="onDelete()"

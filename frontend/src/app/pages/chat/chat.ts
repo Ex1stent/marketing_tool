@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -18,10 +18,14 @@ import { ChatService } from '../../services/chat.service';
   templateUrl: './chat.html',
   styleUrl: './chat.css',
 })
-export class Chat {
+export class Chat implements OnDestroy {
   private readonly chatService = inject(ChatService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  
+  private toolEventSource: EventSource | null = null;
+  
+  protected readonly toolEvents = this.chatService.toolEvents;
 
   protected readonly loading = signal(true);
 
@@ -42,6 +46,37 @@ export class Chat {
   protected readonly hasConversation = computed(() =>
     this.chatService.currentConversation() !== null,
   );
+
+  private createOptimisticMessage(payload: { text: string; file?: File }, conversationId: number): Message {
+    return {
+      id: Date.now(),
+      conversation_id: conversationId,
+      role: 'user',
+      content: payload.text,
+      ...(payload.file
+        ? {
+            message_type: payload.file.type.startsWith('image/') ? 'image' : 'file',
+            document: { file_name: payload.file.name },
+          }
+        : {}),
+    };
+  }
+
+  private appendAssistantReply(conversationId: number, content: string): void {
+    this.chatService.messages.update((list) => [
+      ...list,
+      {
+        id: Date.now() + 1,
+        conversation_id: conversationId,
+        role: 'assistant',
+        content,
+      },
+    ]);
+  }
+
+  ngOnDestroy(): void {
+    this.toolEventSource?.close();
+  }
 
   constructor() {
     void this.refreshConversations();
@@ -75,12 +110,19 @@ export class Chat {
   }
 
   private async loadDetail(convId: number): Promise<void> {
+    // Close previous SSE connection
+    this.toolEventSource?.close();
+    this.toolEvents.set([]);
+    
     try {
       const detail = await firstValueFrom(this.chatService.loadConversation(convId));
       this.chatService.currentConversation.set(detail);
       if (!this.chatService.isTyping()) {
         this.chatService.messages.set(detail.messages ?? []);
       }
+      
+      // Subscribe to tool events for this conversation
+      this.toolEventSource = this.chatService.subscribeToToolEvents(convId);
     } catch (error) {
       console.error('Failed to load conversation detail', error);
     }
@@ -88,14 +130,9 @@ export class Chat {
 
   //Sending from the landing page creates a new conversation.
   protected async onSendLanding(payload: { text: string; file?: File }): Promise<void> {
-    const optimistic: Message = {
-      id: Date.now(),
-      conversation_id: 0,
-      role: 'user',
-      content: payload.text,
-    };
-    this.chatService.messages.set([optimistic]);
+    this.chatService.messages.set([this.createOptimisticMessage(payload, 0)]);
     this.creating.set(true);
+    this.chatService.toolEvents.set([]);
     this.chatService.isTyping.set(true);
     try {
       const reply = await firstValueFrom(this.chatService.sendMessageNew(payload.text, payload.file));
@@ -104,15 +141,8 @@ export class Chat {
         title: payload.text.length > 100 ? payload.text.slice(0, 100) + '...' : payload.text,
       };
       this.conversations.update((list) => [created, ...list]);
-      this.chatService.messages.update((list) => [
-        ...list,
-        {
-          id: Date.now() + 1,
-          conversation_id: reply.conv_id,
-          role: 'assistant',
-          content: reply.content,
-        },
-      ]);
+      this.appendAssistantReply(reply.conv_id, reply.content);
+      this.chatService.toolEvents.set([]);
       await this.router.navigate(['/chats', created.id]);
     } catch (error) {
       console.error('Failed to create chat', error);
@@ -128,37 +158,32 @@ export class Chat {
       return;
     }
 
-    const optimistic: Message = {
-      id: Date.now(),
-      conversation_id: conv.id,
-      role: 'user',
-      content: payload.text,
-    };
-    this.chatService.messages.update((list) => [...list, optimistic]);
-
+    this.chatService.messages.update((list) => [...list, this.createOptimisticMessage(payload, conv.id)]);
     this.chatService.isTyping.set(true);
+    this.chatService.toolEvents.set([]);
     try {
       const reply = await firstValueFrom(
         this.chatService.sendMessage(conv.id, payload.text, payload.file),
       );
-      this.chatService.messages.update((list) => [
-        ...list,
-        {
-          id: Date.now() + 1,
-          conversation_id: conv.id,
-          role: 'assistant',
-          content: reply.content,
-        },
-      ]);
+      this.appendAssistantReply(conv.id, reply.content);
       try {
         const detail = await firstValueFrom(this.chatService.loadConversation(conv.id));
         this.chatService.currentConversation.set(detail);
         this.chatService.messages.set(detail.messages ?? []);
+        this.chatService.toolEvents.set([]);
       } catch (error) {
         console.error('Failed to refresh conversation', error);
+        // Remove temporarily added optimistic and assistant messages
+        this.chatService.messages.set(
+          this.chatService.messages().filter((m) => m.id !== Date.now() && m.id !== Date.now() - 1)
+        );
       }
     } catch (error) {
       console.error('Failed to send message', error);
+      // Remove temporarily added optimistic message
+      this.chatService.messages.set(
+        this.chatService.messages().filter((m) => m.id !== Date.now())
+      );
     } finally {
       this.chatService.isTyping.set(false);
     }

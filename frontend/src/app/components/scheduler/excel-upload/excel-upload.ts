@@ -1,4 +1,4 @@
-import { Component, output, signal } from '@angular/core';
+import { Component, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 export interface UploadedFile {
@@ -16,6 +16,7 @@ export interface UploadedFile {
 export class ExcelUpload {
   readonly uploaded = output<UploadedFile>();
   readonly uploading = signal(false);
+  readonly disabled = input(false);
   readonly fileName = signal<string | null>(null);
   readonly showModal = signal(false);
   readonly batchTitle = signal('');
@@ -23,6 +24,9 @@ export class ExcelUpload {
   private selectedFile: File | null = null;
 
   protected onFileSelected(event: Event): void {
+    if (this.disabled()) {
+      return;
+    }
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (!file) return;
@@ -34,6 +38,9 @@ export class ExcelUpload {
   }
 
   confirmUpload(): void {
+    if (this.disabled()) {
+      return;
+    }
     if (this.selectedFile) {
       this.showModal.set(false);
       this.uploading.set(true);

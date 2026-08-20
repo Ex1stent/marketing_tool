@@ -3,14 +3,17 @@
     <app-message-bubble [message]="message" [class.user-msg]="message.role === 'user'" />
   }
 
-  @if (isTyping()) {
-    <div class="typing-row">
-      <div class="avatar avatar--ai">BOT</div>
-      <div class="typing">
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-      </div>
-    </div>
+  @if (latestToolEvent() || isTyping()) {
+    <app-message-bubble
+      [message]="{
+        id: -1,
+        conversation_id: 0,
+        role: 'assistant',
+        content: ''
+      }"
+      [pendingToolEvent]="latestToolEvent()"
+      [isLoading]="isTyping()"
+    />
   }
+
 </div>

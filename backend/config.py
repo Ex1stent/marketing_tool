@@ -16,7 +16,7 @@ DOCUMENT_PATH = os.getenv("DOCUMENT_PATH")
 
 # File uploads
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", os.path.join(os.path.dirname(__file__), "uploads"))
-BASE_URL = os.getenv("BASE_URL", "").rstrip("/")
+BASE_URL = os.getenv("BASE_URL").rstrip("/")
 
 # Database
 DATABASE_URL = os.getenv("DATABASE_URL")

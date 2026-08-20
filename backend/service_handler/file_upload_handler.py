@@ -7,9 +7,7 @@ import os
 from fastapi import UploadFile
 from sqlalchemy.orm import Session
 
-from models.message import MessagesRepository
 from models.document_metadata import DocMetadataRepository
-from service_handler.message_handler import MessageHandler
 from utils.logger import logger
 
 
@@ -43,13 +41,6 @@ class FileUploadHandler:
             f.write(content)
         return filepath
 
-    def create_upload_message(self, conv_id: int, filename: str, content_type: str) -> int:
-        message_type = "image" if content_type.startswith("image") else "file"
-        message_repository = MessagesRepository(self.db)
-        message = message_repository.create_message(conv_id, "user", filename, message_type)
-        message_repository.save()
-        return message.id
-
     def save_doc_metadata(self, message_id: int, filename: str, filepath: str, ext: str, content_type: str, size: int) -> None:
         doc_repository = DocMetadataRepository(self.db)
         doc_repository.add_metadata(
@@ -72,12 +63,12 @@ class FileUploadHandler:
         filepath = self.save_to_disk(filename, content)
         extension = file.filename.rsplit(".", 1)[-1]
         
-        message_id = self.create_upload_message(conv_id, file.filename, file.content_type)
-        self.save_doc_metadata(message_id, file.filename, filepath, extension, file.content_type, len(content))
-        
         return {
-            "file_id": message_id, "file_name": file.filename,
-            "file_path": filepath, "mime_type": file.content_type, "file_size": len(content)
+            "file_name": file.filename,
+            "file_path": filepath,
+            "file_extension": extension,
+            "mime_type": file.content_type,
+            "file_size": len(content),
         }
 
     # async def upload_and_send_message(self, conv_id: int | None, message: str | None, file: UploadFile | None) -> dict[str, Any]:

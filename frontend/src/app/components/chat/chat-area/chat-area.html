@@ -5,7 +5,7 @@
     (delete)="onDelete()"
   />
 
-  <app-message-list [messages]="messages()" [isTyping]="isTyping()" />
+  <app-message-list [messages]="messages()" [toolEvents]="toolEvents()" [isTyping]="isTyping()" />
 
   <app-chat-input [disabled]="isTyping()" (send)="onSend($event)" />
 </main>

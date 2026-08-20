@@ -1,6 +1,7 @@
 import { Component, input, output } from '@angular/core';
 
 import { Message } from '../../../models/message.model';
+import { ToolEvent } from '../../../models/tool-event.model';
 import { ChatHeader } from '../chat-header/chat-header';
 import { ChatInput } from '../chat-input/chat-input';
 import { MessageList } from '../message-list/message-list';
@@ -18,6 +19,8 @@ export class ChatArea {
   readonly convId = input<number | null>(null);
 
   readonly messages = input.required<Message[]>();
+
+  readonly toolEvents = input<ToolEvent[]>([]);
 
   readonly isTyping = input<boolean>(false);
 

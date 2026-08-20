@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 import { Conversation } from '../models/conversation.model';
 import { Message } from '../models/message.model';
+import { ToolEvent } from '../models/tool-event.model';
 
 @Injectable({ providedIn: 'root' })
 export class ChatService {
@@ -18,6 +19,8 @@ export class ChatService {
   readonly messages = signal<Message[]>([]);
 
   readonly isTyping = signal(false);
+
+  readonly toolEvents = signal<ToolEvent[]>([]);
 
   readonly activeConversationId = computed<number | null>(
     () => this.currentConversation()?.id ?? null,
@@ -67,5 +70,27 @@ export class ChatService {
 
   updateConversation(convId: number, title: string): Observable<Conversation> {
     return this.http.patch<Conversation>(`${this.baseUrl}/chats/${convId}`, { title });
+  }
+
+  subscribeToToolEvents(chatId: number): EventSource {
+    const eventSource = new EventSource(`${this.baseUrl}/chats/${chatId}/tool-events`);
+    
+    eventSource.addEventListener('tool_call', (e: MessageEvent) => {
+      const event: ToolEvent = JSON.parse(e.data);
+      this.toolEvents.update(events => [...events, { ...event, _id: crypto.randomUUID() }]);
+    });
+    
+    eventSource.addEventListener('tool_result', (e: MessageEvent) => {
+      const result: ToolEvent = JSON.parse(e.data);
+      this.toolEvents.update(events =>
+        events.map(ev =>
+          ev.tool_name === result.tool_name && ev.status === 'running'
+            ? { ...ev, status: result.status, timestamp: result.timestamp }
+            : ev
+        )
+      );
+    });
+    
+    return eventSource;
   }
 }
