@@ -7,3 +7,12 @@ skills-lock.json
 # Added by code-review-graph
 .code-review-graph/
 docs/
+
+# Secrets & build artifacts
+.env
+.venv/
+node_modules/
+dist/
+.angular/
+uploads/
+erl_crash.dump

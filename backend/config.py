@@ -16,7 +16,7 @@ DOCUMENT_PATH = os.getenv("DOCUMENT_PATH")
 
 # File uploads
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", os.path.join(os.path.dirname(__file__), "uploads"))
-BASE_URL = os.getenv("BASE_URL").rstrip("/")
+BASE_URL = (os.getenv("BASE_URL") or "http://localhost:4200").rstrip("/")
 
 # Database
 DATABASE_URL = os.getenv("DATABASE_URL")
@@ -54,4 +54,7 @@ META_WEBHOOK_VERIFY_TOKEN = os.getenv("META_WEBHOOK_VERIFY_TOKEN")
 WHATSAPP_VERIFY_TOKEN = os.getenv("WHATSAPP_VERIFY_TOKEN")
 
 #Scheduler
-TEMPLATE_PATH = r"C:\Users\sharm\Documents\tool_v1\marketing_tool - v1\frontend\src\assets\scheduler_template.xlsx"
+TEMPLATE_PATH = os.getenv(
+    "TEMPLATE_PATH",
+    os.path.join(os.path.dirname(__file__), "assets", "scheduler_template.xlsx"),
+)
